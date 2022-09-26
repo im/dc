@@ -48,7 +48,7 @@ const filterWords = (words:any = []) => {
 
 const getWords = async () => {
     loading.value = true
-    const response = await fetch('/data.json')
+    const response = await fetch('/dc/data.json')
     const data = await response.json()
     words.value = filterWords(data)
 
