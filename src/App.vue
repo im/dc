@@ -7,9 +7,9 @@
         <div v-if="!isLogin" class="handle remember" @click="routeLink(route.name === 'remember' ? 'write' : 'remember')">
             {{ route.name === 'remember' ? 'H': 'R' }}
         </div>
-        <div v-if="!isLogin" class="handle route" @click="routeLink(route.name === 'add' ? 'write' : 'add')">
+        <!-- <div v-if="!isLogin" class="handle route" @click="routeLink(route.name === 'add' ? 'write' : 'add')">
             {{ route.name === 'add' ? 'H': 'A' }}
-        </div>
+        </div> -->
     </div>
 </template>
 
