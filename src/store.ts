@@ -42,7 +42,7 @@ export const useStore = defineStore({
         async getWords (page: number) {
             this.wordLoading = true
 
-            const response = await fetch('/data.json')
+            const response = await fetch('/dc/data.json')
             const data = await response.json()
             console.log('data: ', data)
             // const wordMap = storageGet('wordMap') || {}
