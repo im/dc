@@ -12,7 +12,7 @@ const handleData = (list) => {
     })
 
     const result = list.concat(words).sort((a, b) => {
-        return new Date(b.updatetime).getTime() - new Date(a.updatetime).getTime()
+        return new Date(a.updatetime).getTime() - new Date(b.updatetime).getTime()
     })
     fs.outputFileSync(distDir, JSON.stringify(result))
 
@@ -52,6 +52,7 @@ const getWords = async (page, cookie) => {
 const run = async () => {
 
     const cookie = await login.cookie()
+    fs.outputFileSync(distDir, '[]')
 
     await getWords(0, cookie)
 

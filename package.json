@@ -5,7 +5,8 @@
     "scripts": {
         "dev": "vite",
         "build": "vue-tsc --noEmit && vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "data": "node data/app.js"
     },
     "dependencies": {
         "@tangxiaomi/eslint-config": "^0.0.3",

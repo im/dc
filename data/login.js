@@ -1,7 +1,6 @@
 const request = require('request')
 
 const login = () => {
-    console.log('process.env.API_URL: ', process.env.USERNAME)
     return new Promise((reslove, reject) => {
         request(
             {
