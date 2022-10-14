@@ -4,8 +4,11 @@ import { onMounted, defineComponent, nextTick, computed, watchEffect, watch, ref
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '../store'
 import { storageGet, storageSet, format } from '../utils'
+import client, { q } from '../db'
 
 const store = useStore()
+const route = useRoute()
+const router = useRouter()
 
 const words = ref([])
 const currentIndex = ref(0)
@@ -21,19 +24,17 @@ const currentWord: any = computed(() => words.value[currentIndex.value] || {})
 const word = computed(() => {
     const w = currentWord.value.word || ''
     if (syllables.value && w) {
-        return (store.syllableMap[w] && store.syllableMap[w].value) || w || ''
+        return currentWord.value.syllables || w || ''
     }
     return w || ''
 })
-const textArray = computed(() => [...word.value])
+const textArray = computed(() => {
+    return [...word.value]
+})
 const wordArray = computed(() => [...value.value])
-const ukpron = computed(() => currentWord.value.ukpron || '')
+const ukpron = computed(() => currentWord.value.uk_pron || '')
 const interprets = computed(() => ( currentWord.value.interpret || '').split(/\r?\n/))
 const inputRef = ref<HTMLInputElement | null | any>(null)
-
-watchEffect(() => {
-    word.value && !~word.value.indexOf('.') && store.getSyllables(word.value)
-})
 
 const filterWords = (words:any = []) => {
     const remember = storageGet('remember') || {}
@@ -48,12 +49,28 @@ const filterWords = (words:any = []) => {
 
 const getWords = async () => {
     loading.value = true
-    const response = await fetch('/dc/data.json')
-    const data = await response.json()
+
+    const d: any = route.params.date || format(new Date(), 'YYYY-mm-dd')
+
+    const res:any = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), d)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
+    const data = (res.data || []).map((item:any) => {
+        return {
+            ...item.data,
+            id: item.ref.value.id
+        }
+    })
+
     words.value = filterWords(data)
 
     loading.value = false
+
+    focus()
+
 }
+
+watch(() => route.params.date, () => {
+    getWords()
+})
 
 watchEffect(() => {
     getWords()
@@ -77,6 +94,12 @@ const isSuccess = computed(() => {
     const wordArrayLen = wordArray.value.length
     return successLen === textArrayLen && textArrayLen === wordArrayLen
 })
+
+const goAdd = () => {
+    router.push({
+        name: 'add'
+    })
+}
 
 const getCurrentIndex = (index: any) => {
     const len = words.value.length
@@ -174,6 +197,11 @@ const handleKey = (e:any) => {
         return
     }
 
+    if (code === 189 || code === 187) {
+        e.returnValue = false
+        return false
+    }
+
     if (code === 13) {
         if (isSuccess.value) {
             setRemember()
@@ -215,9 +243,6 @@ const changeValue = (e:any) => {
 }
 
 onMounted(() => {
-    // getWords(Number(route.params.page || 1))
-
-    store.setSyllableMap()
     focus()
 })
 
@@ -225,50 +250,57 @@ onMounted(() => {
 
 <template>
     <div class="write-wrap">
-        <div class="write-box">
-            <el-skeleton v-if="loading" :rows="5" animated />
-            <div v-else>
-                <div class="row" :class="{ review: review }">
-                    <div
-                        v-for="(w, i) in textArray"
-                        :key="w + i"
-                        :class="{ dot: isDot(w) }"
-                        class="word">
-                        {{ isDot(w) ? '' : w }}
+        <template v-if="words.length">
+            <div class="write-box">
+                <el-skeleton v-if="loading" :rows="5" animated />
+                <div v-else>
+                    <div class="row" :class="{ review: review }">
+                        <div
+                            v-for="(w, i) in textArray"
+                            :key="w + i"
+                            :class="{ dot: isDot(w) }"
+                            class="word">
+                            {{ isDot(w) ? '' : w }}
+                        </div>
+                        <div class="cursor hide"></div>
                     </div>
-                    <div class="cursor hide"></div>
+                    <div class="row">
+                        <div
+                            v-for="(w, i) in wordArray"
+                            :key="w + i"
+                            :class="{ dot: isDot(w), [codeClass[i]]: true }"
+                            class="word">
+                            {{ isDot(w) ? '' : w }}
+                        </div>
+                        <div class="cursor"></div>
+                    </div>
                 </div>
-                <div class="row">
-                    <div
-                        v-for="(w, i) in wordArray"
-                        :key="w + i"
-                         :class="{ dot: isDot(w), [codeClass[i]]: true }"
-                        class="word">
-                        {{ isDot(w) ? '' : w }}
+                <input
+                    ref="inputRef"
+                    v-model="value"
+                    type="text"
+                    class="input"
+                    @keydown="handleKey"
+                    @blur="blur"
+                    @input="changeValue" />
+            </div>
+            <div class="write-box">
+                <div v-if="!loading">
+                    <div v-if="ukpron" :class="{ review: review }" class="ukpron">/{{ ukpron }}/ <span v-if="voice" class="voice">V</span></div>
+                    <div class="interprets" :class="{ review: view }">
+                        <div
+                            v-for="interpret in interprets"
+                            :key="interpret">
+                            {{ interpret }}
+                        </div>
                     </div>
-                    <div class="cursor"></div>
                 </div>
             </div>
-            <input
-                ref="inputRef"
-                v-model="value"
-                type="text"
-                class="input"
-                @keydown="handleKey"
-                @blur="blur"
-                @input="changeValue" />
-        </div>
-        <div class="write-box">
-            <div v-if="!loading">
-                <div v-if="ukpron" :class="{ review: review }" class="ukpron">/{{ ukpron }}/ <span v-if="voice" class="voice">V</span></div>
-                <div class="interprets" :class="{ review: view }">
-                    <div
-                        v-for="interpret in interprets"
-                        :key="interpret">
-                        {{ interpret }}
-                    </div>
-                </div>
-            </div>
+        </template>
+        <div v-else class="empty">
+            <el-empty description="暂无数据"></el-empty>
+            <!-- <p></p> -->
+            <!-- <el-button size="large" plain @click="goAdd">ADD</el-button> -->
         </div>
     </div>
 </template>
@@ -286,6 +318,15 @@ onMounted(() => {
     height 100%
     padding-top 200px
     font-family FredokaOne
+    .empty
+        width 100%
+        text-align: center
+        .el-button
+            border-radius 0
+            font-weight bold
+            height 40px
+            line-height 40px
+            font-family FredokaOne
     .voice
         font-family RubikMoonrocks
     .review

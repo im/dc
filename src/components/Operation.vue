@@ -1,15 +1,15 @@
 <template>
      <div v-click-outside="onClickOutside" class="operation" :class="{ open: open }">
-        <!-- <div class="page">
-            <div :class="{ disabled: isPrevPageDisabled || loading }" @click="prevPage">
+        <div class="page">
+            <div :class="{ loading }" @click="prevPage">
                 -
                 PREV
             </div>
-            <div :class="{ disabled: isNextPageDisabled || loading }" @click="nextPage">
+            <div :class="{ loading }" @click="nextPage">
             +
                 NEXT
             </div>
-        </div> -->
+        </div>
         <Switch v-model="store.config.voice" code="1" label="Voice"></Switch>
         <Switch v-model="store.config.syllables" code="2" label="Syllables"></Switch>
         <Switch v-model="store.config.review" code="3" label="Review"></Switch>
@@ -30,6 +30,7 @@ import { ref, defineEmits, onMounted,computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '../store'
 import Switch from './Switch.vue'
+import { storageGet, storageSet, format } from '../utils'
 
 const store = useStore()
 
@@ -42,33 +43,28 @@ const page = computed(() => Number(route.params.page || 1))
 const totalPage = computed(() => store.pageInfo.totalPage)
 const loading = computed(() => store.wordLoading)
 
-const isNextPageDisabled = computed(() => page.value >= totalPage.value)
-const isPrevPageDisabled = computed(() => page.value <= 1)
-
 const nextPage = () => {
-    let p = page.value
-    p = p + 1
-    if (p >= totalPage.value) {
-        p = totalPage.value
-    }
+    const d: any = route.params.date || format(new Date(), 'YYYY-mm-dd')
+    const calc = new Date(d).getTime() + (1000 * 60 * 60 * 24)
+    const cur = format(new Date(calc), 'YYYY-mm-dd')
+
     router.push({
-        name: 'write',
+        name: route.name as string,
         params: {
-            page: p
+            date: cur
         }
     })
 }
 
 const prevPage = () => {
-    let p = page.value
-    p = p - 1
-    if (p <= 1) {
-        p = 1
-    }
+    const d: any = route.params.date || format(new Date(), 'YYYY-mm-dd')
+    const calc = new Date(d).getTime() - ( 1000 * 60 * 60 * 24)
+    const cur = format(new Date(calc), 'YYYY-mm-dd')
+
     router.push({
-        name: 'write',
+        name: route.name as string,
         params: {
-            page: p
+            date: cur
         }
     })
 }
@@ -126,6 +122,7 @@ onMounted(() => {
     top 0
     transition: 0.2s;
     z-index 1
+    // visibility:  hidden
     .reload
         height 50px
         line-height 50px
@@ -164,7 +161,7 @@ onMounted(() => {
                 color #fff
                 background rgba(64, 158, 255, 0.8)
     .handle
-        left 0
+        left -1000px
         right auto
         bottom 100px
         border-bottom-left-radius 0px

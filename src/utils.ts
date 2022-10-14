@@ -44,3 +44,14 @@ export const format = (millisecond:any, template:any) => {
     }
     return res
 }
+
+export const transform = (word:string, date: string) => {
+    console.log('date: ', date)
+    const str = 'abcdefghijklmnopqrstuvwxyz'
+    const lower = str.split('')
+    const targetArr = word.split('').map(v => v.toLocaleLowerCase())
+    const resluts = targetArr.map(i => lower.indexOf(i) % 10).join('')
+    const s:any = (date + resluts).repeat(3)
+    return s.substring(0, 16)
+
+}

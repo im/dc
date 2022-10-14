@@ -21,12 +21,12 @@ const isLogin = () => {
 const routes = [
     {
         name: 'write',
-        path: '/:page?',
+        path: '/:date?',
         component: Write
     },
     {
         name: 'add',
-        path: '/add',
+        path: '/add/:date?',
         component: Add
     },
     {
