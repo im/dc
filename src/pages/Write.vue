@@ -3,7 +3,7 @@
 import { onMounted, defineComponent, nextTick, computed, watchEffect, watch, ref, pushScopeId } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '../store'
-import { storageGet, storageSet, format } from '../utils'
+import { storageGet, storageSet, format, transform } from '../utils'
 import client, { q } from '../db'
 
 const store = useStore()
@@ -15,10 +15,13 @@ const currentIndex = ref(0)
 const value = ref('')
 
 const loading = ref(false)
+const remembers:any = ref([])
 const voice = computed(() => store.config.voice)
 const syllables = computed(() => store.config.syllables)
 const review = computed(() => store.config.review)
 const view = computed(() => store.config.view)
+
+const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
 
 const currentWord: any = computed(() => words.value[currentIndex.value] || {})
 const word = computed(() => {
@@ -37,22 +40,14 @@ const interprets = computed(() => ( currentWord.value.interpret || '').split(/\r
 const inputRef = ref<HTMLInputElement | null | any>(null)
 
 const filterWords = (words:any = []) => {
-    const remember = storageGet('remember') || {}
-    const remembers = Object.keys(remember).reduce((arr, currentValue:any) => {
-        if (remember[currentValue]) {
-            return arr.concat(remember[currentValue])
-        }
-        return arr
-    }, [])
-    return (words || []).filter((v:any) => !remembers.includes( v.word as never ))
+    const arr = remembers.value.map((v:any) => v.word)
+    return (words || []).filter((v:any) => !arr.includes( v.word as never ))
 }
 
 const getWords = async () => {
     loading.value = true
 
-    const d: any = route.params.date || format(new Date(), 'YYYY-mm-dd')
-
-    const res:any = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), d)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
+    const res:any = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date.value)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
     const data = (res.data || []).map((item:any) => {
         return {
             ...item.data,
@@ -67,14 +62,6 @@ const getWords = async () => {
     focus()
 
 }
-
-watch(() => route.params.date, () => {
-    getWords()
-})
-
-watchEffect(() => {
-    getWords()
-})
 
 const codeClass = computed(() => {
     const arr: any = []
@@ -94,12 +81,6 @@ const isSuccess = computed(() => {
     const wordArrayLen = wordArray.value.length
     return successLen === textArrayLen && textArrayLen === wordArrayLen
 })
-
-const goAdd = () => {
-    router.push({
-        name: 'add'
-    })
-}
 
 const getCurrentIndex = (index: any) => {
     const len = words.value.length
@@ -130,7 +111,7 @@ const play = () => {
 }
 
 const log = () => {
-    console.clear()
+    // console.clear()
     if (!review.value) {
         console.log(
             `%c${word.value}`,
@@ -164,17 +145,58 @@ const prev = () => {
     log()
 }
 
+const getRemember = async () => {
+    const res:any = await client.query( q.Map(q.Paginate(q.Match(q.Index('remember_list'), date.value)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
+    const data = (res.data || []).map((item:any) => {
+        return {
+            ...item.data,
+            id: item.ref.value.id
+        }
+    })
+    remembers.value = data
+    console.log('data: ', data)
+}
+
 const setRemember = () => {
-    const remember = storageGet('remember') || {}
-    const currentDate = format(new Date(), 'YYYY-mm-dd')
     const word = currentWord.value.word
-    if (remember[currentDate]) {
-        remember[currentDate].push(word)
-    } else {
-        remember[currentDate] = [word]
-    }
-    words.value = filterWords(words.value)
-    storageSet('remember', remember)
+    const uuid = transform(word, format(date.value, 'YYYYmmdd') as any)
+    client.query(
+        q.If(
+            q.Exists(q.Ref(q.Collection('rememberList'), uuid)),
+            q.Update(
+                q.Ref(q.Collection('rememberList'), uuid),
+                {
+                    data: {
+                        word,
+                        date: date.value
+                    },
+                },
+            ),
+            q.Create(
+                q.Ref(q.Collection('rememberList'), uuid),
+                {
+                    data: {
+                        word,
+                        date: date.value
+                    },
+                },
+            )
+        )
+    )
+        .then(async (res:any) => {
+            await getRemember()
+
+            words.value = filterWords(words.value)
+        })
+        .catch((err) => {
+            console.error(
+                'Error: [%s] %s: %s',
+                err.name,
+                err.message,
+                err.errors()[0].description,
+            )
+            alert(err.message)
+        })
 }
 
 const blur = () => {
@@ -242,6 +264,17 @@ const changeValue = (e:any) => {
     }
 }
 
+watch(() => route.params.date, async () => {
+    await getRemember()
+
+    getWords()
+})
+
+watchEffect(async () => {
+    await getRemember()
+    getWords()
+})
+
 onMounted(() => {
     focus()
 })
@@ -297,10 +330,8 @@ onMounted(() => {
                 </div>
             </div>
         </template>
-        <div v-else class="empty">
-            <el-empty description="暂无数据"></el-empty>
-            <!-- <p></p> -->
-            <!-- <el-button size="large" plain @click="goAdd">ADD</el-button> -->
+        <div v-if="!words.length && !loading" class="empty">
+            <el-empty description="empyt"></el-empty>
         </div>
     </div>
 </template>

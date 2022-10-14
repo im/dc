@@ -1,65 +1,21 @@
 <template>
     <div class="app">
-        <img v-if="bg" :src="bg" class="bg" />
         <router-view></router-view>
-        <!-- <Wallpaper v-if="!isLogin" v-model="wallpaperIndex" /> -->
         <Operation v-if="!isLogin" />
-        <!-- <div v-if="!isLogin" class="handle remember" @click="routeLink(route.name === 'remember' ? 'write' : 'remember')">
-            {{ route.name === 'remember' ? 'H': 'R' }}
-        </div> -->
-        <!-- <div v-if="!isLogin" class="handle route" @click="routeLink(route.name === 'add' ? 'write' : 'add')">
-            {{ route.name === 'add' ? 'H': 'A' }}
-        </div> -->
-        <div class="date">{{ date }}</div>
+        <div v-if="!isLogin && !isRemember" class="date">{{ date }}</div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed,watchEffect, onMounted } from 'vue'
-import Wallpaper from './components/Wallpaper.vue'
+import { computed, } from 'vue'
 import Operation from './components/Operation.vue'
-import { useRouter, useRoute, } from 'vue-router'
-import { getAssetsBg, storageGet, storageSet, format } from './utils'
-import client, { q } from './db'
+import { useRoute, } from 'vue-router'
+import { format } from './utils'
 
-const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
-
-const index = Number(storageGet('wallpaper') || 0)
-
-const wallpaperIndex = ref(index)
-const router = useRouter()
 const route = useRoute()
-
-const routeLink = (name: string) => {
-    router.push({
-        name
-    })
-}
-
-watchEffect(() => {
-    storageSet('wallpaper', wallpaperIndex.value)
-})
-
+const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
 const isLogin = computed(() => route.name === 'login')
-
-const bg = computed(() => getAssetsBg(wallpaperIndex.value))
-
-onMounted(() => {
-    // client.query(
-    //     q.ToDate('2018-06-06')
-    // )
-    //     .then(function (res) { console.log('Result:', res) })
-    //     .catch(function (err) { console.log('Error:', err) })
-
-    // fetch(`https://langeasy.com.cn/loadLexisList.action?strict=1&word=hello`).then(res => {
-    //     return res.json()
-
-    // }).then(res => {
-    //     console.log('res: ', res)
-
-    // })
-})
-
+const isRemember = computed(() => route.name === 'remember')
 </script>
 
 <style lang="stylus">

@@ -31,7 +31,7 @@ const routes = [
     },
     {
         name: 'remember',
-        path: '/remember',
+        path: '/remember/:date?',
         component: Remember
     },
     {

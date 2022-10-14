@@ -14,10 +14,14 @@
         <Switch v-model="store.config.syllables" code="2" label="Syllables"></Switch>
         <Switch v-model="store.config.review" code="3" label="Review"></Switch>
         <Switch v-model="store.config.view" code="4" label="View"></Switch>
-        <!-- <div class="reload" @click="reload">
-            Reload
+        <div class="reload" @click="routerLink">
+            {{ routerText }}
             <div class="bg"></div>
-        </div> -->
+        </div>
+        <div class="reload" @click="add">
+            Add
+            <div class="bg"></div>
+        </div>
         <div class="handle" @click="handle">
             {{ open ? 'OFF': 'ON' }}
         </div>
@@ -37,15 +41,15 @@ const store = useStore()
 const open = ref(false)
 const router = useRouter()
 const route = useRoute()
-
-const page = computed(() => Number(route.params.page || 1))
-
-const totalPage = computed(() => store.pageInfo.totalPage)
 const loading = computed(() => store.wordLoading)
+const date: any = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
+
+const isRemember = computed(() => route.name === 'remember')
+
+const routerText = computed(() => isRemember.value ? 'Write' : 'Remember' )
 
 const nextPage = () => {
-    const d: any = route.params.date || format(new Date(), 'YYYY-mm-dd')
-    const calc = new Date(d).getTime() + (1000 * 60 * 60 * 24)
+    const calc = new Date(date.value).getTime() + (1000 * 60 * 60 * 24)
     const cur = format(new Date(calc), 'YYYY-mm-dd')
 
     router.push({
@@ -57,8 +61,7 @@ const nextPage = () => {
 }
 
 const prevPage = () => {
-    const d: any = route.params.date || format(new Date(), 'YYYY-mm-dd')
-    const calc = new Date(d).getTime() - ( 1000 * 60 * 60 * 24)
+    const calc = new Date(date.value).getTime() - ( 1000 * 60 * 60 * 24)
     const cur = format(new Date(calc), 'YYYY-mm-dd')
 
     router.push({
@@ -76,9 +79,23 @@ const onClickOutside = () => {
     open.value = false
 }
 
-const reload = () => {
-    store.clearWordMap()
-    window.location.reload()
+const routerLink = () => {
+    router.push({
+        name: isRemember.value ? 'write' : 'remember',
+        params: {
+            date: date.value
+        }
+    })
+
+}
+
+const add = () => {
+    router.push({
+        name: 'add',
+        params: {
+            date: date.value
+        }
+    })
 }
 
 onMounted(() => {
@@ -130,6 +147,7 @@ onMounted(() => {
         cursor pointer
         position relative
         overflow hidden
+        margin-bottom 10px
         .bg
             background: #409eff;
             filter: blur(20px);
