@@ -184,6 +184,8 @@ const setRemember = () => {
         )
     )
         .then(async (res:any) => {
+            // console.log('res: ', res)
+            // remembers.value = remembers.value.push(res.data)
             await getRemember()
 
             words.value = filterWords(words.value)
