@@ -77,6 +77,7 @@ const addWord = async () => {
         loading.value = false
         details.value = {}
         alert('不背单词没有数据')
+        focus()
         return
     }
     const syllables = await getSyllables(word.value)
@@ -106,6 +107,7 @@ const addWord = async () => {
             loading.value = false
             details.value = wordInfo
             getWords()
+            focus()
         })
         .catch((err) => {
             console.error(
@@ -118,6 +120,7 @@ const addWord = async () => {
             word.value = ''
             loading.value = false
             details.value = {}
+            focus()
         })
 }
 onMounted(() => {
