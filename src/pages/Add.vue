@@ -8,11 +8,14 @@ import client, { q } from '../db'
 
 const route = useRoute()
 const word = ref('')
+const details:any = ref({})
 const loading = ref(false)
 const inputRef = ref<HTMLInputElement | null | any>(null)
 const disabled = computed(() => !word.value.length)
 const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
+const placeholder = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
 const wordList:any = ref([])
+const interprets = computed(() => ( details.value.interpret || '').split(/\r?\n/))
 const add = () => {
     if (word.value.length) {
         addWord()
@@ -70,7 +73,12 @@ const addWord = async () => {
     loading.value = true
 
     const wordInfo = await getWord(word.value)
-    if (!wordInfo) return
+    if (!wordInfo) {
+        loading.value = false
+        details.value = {}
+        alert('不背单词没有数据')
+        return
+    }
     const syllables = await getSyllables(word.value)
     wordInfo.date = date.value
     wordInfo.syllables = syllables
@@ -96,6 +104,7 @@ const addWord = async () => {
         .then((ret) => {
             word.value = ''
             loading.value = false
+            details.value = wordInfo
             getWords()
         })
         .catch((err) => {
@@ -108,6 +117,7 @@ const addWord = async () => {
             alert(err.message)
             word.value = ''
             loading.value = false
+            details.value = {}
         })
 }
 onMounted(() => {
@@ -119,8 +129,17 @@ onMounted(() => {
 <template>
     <div class="add-wrap">
         <div class="add-box">
-            <el-input ref="inputRef" v-model.trim="word" :disabled="loading" :autofocus="true" type="text" size="large" @blur="blur" @keyup.enter="add"></el-input>
+            <el-input ref="inputRef" v-model.trim="word" :disabled="loading" :placeholder="placeholder" :autofocus="true" type="text" size="large" @blur="blur" @keyup.enter="add"></el-input>
             <el-button :loading="loading" :disabled="disabled" size="large" plain @click="add">SUBMIT</el-button>
+            <div class="title">{{ details.syllables }}</div>
+            <div class="interprets">
+                <div
+                    v-for="interpret in interprets"
+                    :key="interpret">
+                    {{ interpret }}
+                </div>
+            </div>
+            <div v-if="details.uk_pron">/{{ details.uk_pron }}/</div>
         </div>
         <div class="word-list">
             <div v-for="item in wordList" :key="item.word" class="item" @click="deleteWord(item)">{{ item.word }}</div>
@@ -135,6 +154,7 @@ onMounted(() => {
     display flex
     padding-top 200px
     font-family FredokaOne
+    position relative
 .add-box
     margin  0 auto
     text-align center
@@ -144,6 +164,7 @@ onMounted(() => {
         height 40px
         line-height 40px
         font-family FredokaOne
+        margin-bottom 10px
     .el-input__wrapper
         width 100%
         border-radius 0!important
@@ -161,9 +182,17 @@ onMounted(() => {
         margin-bottom 10px
         width 300px
         display block
+.title
+    font-size 28px
+    margin-bottom 10px
 .word-list
-    height: 100%
+    height: 100vh
     overflow-y: auto
+    position absolute
+    top 0
+    left 10px
     .item
         cursor pointer
+        &:hover
+            color rgba(64,158,255,0.8)
 </style>

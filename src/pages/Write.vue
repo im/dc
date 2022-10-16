@@ -184,8 +184,6 @@ const setRemember = () => {
         )
     )
         .then(async (res:any) => {
-            // console.log('res: ', res)
-            // remembers.value = remembers.value.push(res.data)
             await getRemember()
 
             words.value = filterWords(words.value)
@@ -333,7 +331,7 @@ onMounted(() => {
             </div>
         </template>
         <div v-if="!words.length && !loading" class="empty">
-            <el-empty description="empyt"></el-empty>
+            <el-empty description="empty"></el-empty>
         </div>
     </div>
 </template>
