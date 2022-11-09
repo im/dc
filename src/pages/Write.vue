@@ -154,7 +154,6 @@ const getRemember = async () => {
         }
     })
     remembers.value = data
-    console.log('data: ', data)
 }
 
 const setRemember = () => {

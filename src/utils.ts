@@ -46,7 +46,6 @@ export const format = (millisecond:any, template:any) => {
 }
 
 export const transform = (word:string, date: string) => {
-    console.log('date: ', date)
     const str = 'abcdefghijklmnopqrstuvwxyz'
     const lower = str.split('')
     const targetArr = word.split('').map(v => v.toLocaleLowerCase())
