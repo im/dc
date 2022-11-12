@@ -150,7 +150,7 @@ onMounted(() => {
     </div>
 </template>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 .add-wrap
     width 100%
     height 100%

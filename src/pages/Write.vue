@@ -186,6 +186,7 @@ const setRemember = () => {
             await getRemember()
 
             words.value = filterWords(words.value)
+            value.value = ''
         })
         .catch((err) => {
             console.error(
@@ -226,7 +227,7 @@ const handleKey = (e:any) => {
     if (code === 13) {
         if (isSuccess.value) {
             setRemember()
-            next()
+            // next()
         }
     }
 
