@@ -60,7 +60,7 @@ const getRemember = async () => {
 }
 
 const handleClick = async (item:any) => {
-    const res = await client.query(q.Delete(q.Ref(q.Collection('rememberList'), item.id)))
+    await client.query(q.Delete(q.Ref(q.Collection('rememberList'), item.id)))
 
 
     remembers.value = remembers.value.map((v: any) => {
