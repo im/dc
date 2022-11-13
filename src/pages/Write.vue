@@ -123,13 +123,15 @@ const log = () => {
             console.log(`%c${interprets.value[0]}`, 'font-size:12px')
 }
 
-const next = () => {
+const next = (isRemember = false) => {
     if (store.config.review) {
         play()
     }
-    const current = currentIndex.value
-    const index = current + 1
-    currentIndex.value = getCurrentIndex(index)
+    if (!isRemember) {
+        const current = currentIndex.value
+        const index = current + 1
+        currentIndex.value = getCurrentIndex(index)
+    }
     value.value = ''
     log()
     if (!store.config.review) {
@@ -186,7 +188,6 @@ const setRemember = () => {
             await getRemember()
 
             words.value = filterWords(words.value)
-            value.value = ''
         })
         .catch((err) => {
             console.error(
@@ -227,7 +228,7 @@ const handleKey = (e:any) => {
     if (code === 13) {
         if (isSuccess.value) {
             setRemember()
-            // next()
+            next(true)
         }
     }
 
