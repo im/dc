@@ -60,9 +60,15 @@ const getRemember = async () => {
 }
 
 const handleClick = async (item:any) => {
-    await client.query(q.Delete(q.Ref(q.Collection('rememberList'), item.id)))
+    const res = await client.query(q.Delete(q.Ref(q.Collection('rememberList'), item.id)))
 
-    getRemember()
+
+    remembers.value = remembers.value.map((v: any) => {
+        v.words = v.words.filter((wordItem:any) => wordItem.id !== item.id)
+        return v
+    }).filter((r:any) => r.words.length)
+
+
 }
 
 onMounted(() => {
@@ -83,6 +89,7 @@ onMounted(() => {
         max-width 800px
     .word-list
         display flex
+        flex-wrap wrap
         li
             margin 5px
             cursor pointer
