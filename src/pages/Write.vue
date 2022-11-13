@@ -312,9 +312,7 @@ onMounted(() => {
                         </div>
                         <div class="cursor"></div>
                     </div>
-                </div>
-                <input
-                    v-else-if="words.length"
+                    <input
                     ref="inputRef"
                     v-model="value"
                     type="text"
@@ -322,6 +320,8 @@ onMounted(() => {
                     @keydown="handleKey"
                     @blur="blur"
                     @input="changeValue" />
+                </div>
+                
                 <el-empty v-else="!loading && words.length" description="empty"></el-empty>
             </div>
             <div class="write-box">
