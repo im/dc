@@ -161,30 +161,31 @@ onMounted(() => {
 .add-box
     margin  0 auto
     text-align center
-    .el-button
-        border-radius 0
-        font-weight bold
-        height 40px
-        line-height 40px
-        font-family FredokaOne
-        margin-bottom 10px
-    .el-input__wrapper
-        width 100%
-        border-radius 0!important
-        background rgba(64,158,255,0.2)
-        border 0!important
-        box-shadow none
-        padding 5px 10px
-        height 50px
-    .el-input__inner
-        font-weight bold
-        border-radius 0
-        font-size 24px
-        font-family FredokaOne
-    .el-input
-        margin-bottom 10px
-        width 300px
-        display block
+    /deep/
+        .el-button
+            border-radius 0
+            font-weight bold
+            height 40px
+            line-height 40px
+            font-family FredokaOne
+            margin-bottom 10px
+        .el-input__wrapper
+            width 100%
+            border-radius 0!important
+            background rgba(64,158,255,0.2)
+            border 0!important
+            box-shadow none
+            padding 5px 10px
+            height 50px
+        .el-input__inner
+            font-weight bold
+            border-radius 0
+            font-size 24px
+            font-family FredokaOne
+        .el-input
+            margin-bottom 10px
+            width 300px
+            display block
 .title
     font-size 28px
     margin-bottom 10px

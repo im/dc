@@ -14,7 +14,7 @@ const words = ref([])
 const currentIndex = ref(0)
 const value = ref('')
 
-const loading = ref(false)
+const loading = ref(true)
 const remembers:any = ref([])
 const voice = computed(() => store.config.voice)
 const syllables = computed(() => store.config.syllables)
@@ -216,6 +216,11 @@ const isDot = (v: any) => {
 const handleKey = (e:any) => {
     const code = e.keyCode
 
+    if (code === 192 && store.config.voice) {
+        e.returnValue = false
+        return  play() 
+    }
+
     if (code === 9) {
         return
     }
@@ -284,10 +289,9 @@ onMounted(() => {
 
 <template>
     <div class="write-wrap">
-        <template v-if="words.length">
             <div class="write-box">
                 <el-skeleton v-if="loading" :rows="5" animated />
-                <div v-else>
+                <div v-else-if="words.length">
                     <div class="row" :class="{ review: review }">
                         <div
                             v-for="(w, i) in textArray"
@@ -310,6 +314,7 @@ onMounted(() => {
                     </div>
                 </div>
                 <input
+                    v-else-if="words.length"
                     ref="inputRef"
                     v-model="value"
                     type="text"
@@ -317,9 +322,10 @@ onMounted(() => {
                     @keydown="handleKey"
                     @blur="blur"
                     @input="changeValue" />
+                <el-empty v-else="!loading && words.length" description="empty"></el-empty>
             </div>
             <div class="write-box">
-                <div v-if="!loading">
+                <div v-if="!loading && words.length">
                     <div v-if="ukpron" :class="{ review: review }" class="ukpron">/{{ ukpron }}/ <span v-if="voice" class="voice">V</span></div>
                     <div class="interprets" :class="{ review: view }">
                         <div
@@ -330,10 +336,9 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-        </template>
-        <div v-if="!words.length && !loading" class="empty">
+        <!-- <div v-if="!words.length && !loading" class="empty">
             <el-empty description="empty"></el-empty>
-        </div>
+        </div> -->
     </div>
 </template>
 
