@@ -158,10 +158,10 @@ const getRemember = async () => {
     remembers.value = data
 }
 
-const setRemember = () => {
+const setRemember = async () => {
     const word = currentWord.value.word
     const uuid = transform(word, format(date.value, 'YYYYmmdd') as any)
-    client.query(
+    await client.query(
         q.If(
             q.Exists(q.Ref(q.Collection('rememberList'), uuid)),
             q.Update(
@@ -188,6 +188,8 @@ const setRemember = () => {
             await getRemember()
 
             words.value = filterWords(words.value)
+
+            return words.value
         })
         .catch((err) => {
             console.error(
@@ -213,7 +215,7 @@ const isDot = (v: any) => {
     return ~v.indexOf('.')
 }
 
-const handleKey = (e:any) => {
+const handleKey = async (e:any) => {
     const code = e.keyCode
 
     if (code === 192 && store.config.voice) {
@@ -232,7 +234,7 @@ const handleKey = (e:any) => {
 
     if (code === 13) {
         if (isSuccess.value) {
-            setRemember()
+            await setRemember()
             next(true)
         }
     }
@@ -336,9 +338,6 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-        <!-- <div v-if="!words.length && !loading" class="empty">
-            <el-empty description="empty"></el-empty>
-        </div> -->
     </div>
 </template>
 
