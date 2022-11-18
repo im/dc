@@ -5,6 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '../store'
 import { storageGet, storageSet, format, transform } from '../utils'
 import client, { q } from '../db'
+import uniqby from 'lodash.uniqby'
 
 const store = useStore()
 const route = useRoute()
@@ -21,9 +22,11 @@ const syllables = computed(() => store.config.syllables)
 const review = computed(() => store.config.review)
 const view = computed(() => store.config.view)
 
-const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
+// const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
+const date = computed(() => route.params.date || '')
 
 const currentWord: any = computed(() => words.value[currentIndex.value] || {})
+const total: any = computed(() => words.value.length || 0)
 const word = computed(() => {
     const w = currentWord.value.word || ''
     if (syllables.value && w) {
@@ -47,7 +50,14 @@ const filterWords = (words:any = []) => {
 const getWords = async () => {
     loading.value = true
 
-    const res:any = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date.value)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
+    let res: any = {}
+
+    if (date.value) {
+        res = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date.value)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
+    } else {
+        res = await client.query( q.Map(q.Paginate(q.Match(q.Index('all_word_list'))), q.Lambda(['ref'],q.Get(q.Var('ref')))))
+    }
+
     const data = (res.data || []).map((item:any) => {
         return {
             ...item.data,
@@ -55,7 +65,7 @@ const getWords = async () => {
         }
     })
 
-    words.value = filterWords(data)
+    words.value = filterWords(uniqby(data, 'word'))
 
     loading.value = false
 
@@ -148,6 +158,7 @@ const prev = () => {
 }
 
 const getRemember = async () => {
+    if (!date.value) return
     const res:any = await client.query( q.Map(q.Paginate(q.Match(q.Index('remember_list'), date.value)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
     const data = (res.data || []).map((item:any) => {
         return {
@@ -220,7 +231,7 @@ const handleKey = async (e:any) => {
 
     if (code === 192 && store.config.voice) {
         e.returnValue = false
-        return  play() 
+        return play()
     }
 
     if (code === 9) {
@@ -291,53 +302,54 @@ onMounted(() => {
 
 <template>
     <div class="write-wrap">
-            <div class="write-box">
-                <el-skeleton v-if="loading" :rows="5" animated />
-                <div v-else-if="words.length">
-                    <div class="row" :class="{ review: review }">
-                        <div
-                            v-for="(w, i) in textArray"
-                            :key="w + i"
-                            :class="{ dot: isDot(w) }"
-                            class="word">
-                            {{ isDot(w) ? '' : w }}
-                        </div>
-                        <div class="cursor hide"></div>
+        <div class="write-box">
+            <el-skeleton v-if="loading" :rows="5" animated />
+            <div v-else-if="words.length">
+                <div class="row" :class="{ review: review }">
+                    <div
+                        v-for="(w, i) in textArray"
+                        :key="w + i"
+                        :class="{ dot: isDot(w) }"
+                        class="word">
+                        {{ isDot(w) ? '' : w }}
                     </div>
-                    <div class="row">
-                        <div
-                            v-for="(w, i) in wordArray"
-                            :key="w + i"
-                            :class="{ dot: isDot(w), [codeClass[i]]: true }"
-                            class="word">
-                            {{ isDot(w) ? '' : w }}
-                        </div>
-                        <div class="cursor"></div>
-                    </div>
-                    <input
-                    ref="inputRef"
-                    v-model="value"
-                    type="text"
-                    class="input"
-                    @keydown="handleKey"
-                    @blur="blur"
-                    @input="changeValue" />
+                    <div class="cursor hide"></div>
                 </div>
-                
-                <el-empty v-else="!loading && words.length" description="empty"></el-empty>
+                <div class="row">
+                    <div
+                        v-for="(w, i) in wordArray"
+                        :key="w + i"
+                        :class="{ dot: isDot(w), [codeClass[i]]: true }"
+                        class="word">
+                        {{ isDot(w) ? '' : w }}
+                    </div>
+                    <div class="cursor"></div>
+                </div>
+                <input
+                ref="inputRef"
+                v-model="value"
+                type="text"
+                class="input"
+                @keydown="handleKey"
+                @blur="blur"
+                @input="changeValue" />
             </div>
-            <div class="write-box">
-                <div v-if="!loading && words.length">
-                    <div v-if="ukpron" :class="{ review: review }" class="ukpron">/{{ ukpron }}/ <span v-if="voice" class="voice">V</span></div>
-                    <div class="interprets" :class="{ review: view }">
-                        <div
-                            v-for="interpret in interprets"
-                            :key="interpret">
-                            {{ interpret }}
-                        </div>
+
+            <el-empty v-else="!loading && words.length" description="empty"></el-empty>
+        </div>
+        <div class="write-box">
+            <div v-if="!loading && words.length">
+                <div v-if="ukpron" :class="{ review: review }" class="ukpron">/{{ ukpron }}/ <span v-if="voice" class="voice">V</span></div>
+                <div class="interprets" :class="{ review: view }">
+                    <div
+                        v-for="interpret in interprets"
+                        :key="interpret">
+                        {{ interpret }}
                     </div>
                 </div>
             </div>
+        </div>
+        <div v-if="total" class="count">{{ currentIndex + 1 }} / {{ total }}</div>
     </div>
 </template>
 
@@ -349,6 +361,10 @@ onMounted(() => {
     100%
         opacity 0
         background: #409eff
+.count
+    position fixed
+    right 10px
+    bottom 10px
 .write-wrap
     width 100%
     height 100%
