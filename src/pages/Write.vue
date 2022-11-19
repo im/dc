@@ -26,6 +26,7 @@ const view = computed(() => store.config.view)
 const date = computed(() => route.params.date || '')
 
 const size = computed(() => (route.query.size ? +route.query.size : 0) || 64)
+const cache = computed(() => (route.query.cache || ''))
 
 const currentWord: any = computed(() => words.value[currentIndex.value] || {})
 const total: any = computed(() => words.value.length || 0)
@@ -53,19 +54,27 @@ const getWords = async () => {
     loading.value = true
 
     let res: any = {}
+    let data = []
 
-    if (date.value) {
-        res = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date.value), { size: size.value }), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
+    const storageData = storageGet(date.value + 'words')
+
+    if (storageData && !cache.value) {
+        data = storageData || []
     } else {
-        res = await client.query( q.Map(q.Paginate(q.Match(q.Index('all_word_list')), { size: size.value }), q.Lambda(['ref'],q.Get(q.Var('ref')))))
-    }
-
-    const data = (res.data || []).map((item:any) => {
-        return {
-            ...item.data,
-            id: item.ref.value.id
+        if (date.value) {
+            res = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date.value), { size: size.value }), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
+        } else {
+            res = await client.query( q.Map(q.Paginate(q.Match(q.Index('all_word_list')), { size: size.value }), q.Lambda(['ref'],q.Get(q.Var('ref')))))
         }
-    })
+
+        data = (res.data || []).map((item:any) => {
+            return {
+                ...item.data,
+                id: item.ref.value.id
+            }
+        })
+        storageSet(date.value + 'words', data)
+    }
 
     words.value = filterWords(uniqby(data, 'word'))
 
