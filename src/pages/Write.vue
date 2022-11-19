@@ -4,12 +4,10 @@ import { onMounted, defineComponent, nextTick, computed, watchEffect, watch, ref
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '../store'
 import { storageGet, storageSet, format, transform } from '../utils'
-import client, { q } from '../db'
 import uniqby from 'lodash.uniqby'
 
 const store = useStore()
 const route = useRoute()
-const router = useRouter()
 
 const words = ref([])
 const currentIndex = ref(0)
@@ -22,11 +20,7 @@ const syllables = computed(() => store.config.syllables)
 const review = computed(() => store.config.review)
 const view = computed(() => store.config.view)
 
-// const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
 const date = computed(() => route.params.date || '')
-
-const size = computed(() => (route.query.size ? +route.query.size : 0) || 64)
-const cache = computed(() => (route.query.cache || ''))
 
 const currentWord: any = computed(() => words.value[currentIndex.value] || {})
 const total: any = computed(() => words.value.length || 0)
@@ -53,28 +47,7 @@ const filterWords = (words:any = []) => {
 const getWords = async () => {
     loading.value = true
 
-    let res: any = {}
-    let data = []
-
-    const storageData = storageGet(date.value + 'words')
-
-    if (storageData && !cache.value) {
-        data = storageData || []
-    } else {
-        if (date.value) {
-            res = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date.value), { size: size.value }), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
-        } else {
-            res = await client.query( q.Map(q.Paginate(q.Match(q.Index('all_word_list')), { size: size.value }), q.Lambda(['ref'],q.Get(q.Var('ref')))))
-        }
-
-        data = (res.data || []).map((item:any) => {
-            return {
-                ...item.data,
-                id: item.ref.value.id
-            }
-        })
-        storageSet(date.value + 'words', data)
-    }
+    const data = storageGet(date.value + 'words') || []
 
     words.value = filterWords(uniqby(data, 'word'))
 

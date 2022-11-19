@@ -22,6 +22,14 @@
             Add
             <div class="bg"></div>
         </div>
+        <div class="reload" @click="reload">
+            Reload
+            <div class="bg"></div>
+        </div>
+        <div class="reload" @click="all">
+            All
+            <div class="bg"></div>
+        </div>
         <div class="handle" @click="handle">
             {{ open ? 'OFF': 'ON' }}
         </div>
@@ -43,7 +51,7 @@ const router = useRouter()
 const route = useRoute()
 const loading = computed(() => store.wordLoading)
 const date: any = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
-
+const size = computed(() => (route.query.size ? +route.query.size : 0) || 64)
 const isRemember = computed(() => route.name === 'remember')
 
 const routerText = computed(() => isRemember.value ? 'Write' : 'Remember' )
@@ -96,6 +104,14 @@ const add = () => {
             date: date.value
         }
     })
+}
+
+const reload = () => {
+    store.reload(route.params.date || '', size.value)
+}
+
+const all = () => {
+    store.reload(route.params.date || '', 1000)
 }
 
 onMounted(() => {
