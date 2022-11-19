@@ -158,59 +158,19 @@ const prev = () => {
 }
 
 const getRemember = async () => {
-    if (!date.value) return
-    const res:any = await client.query( q.Map(q.Paginate(q.Match(q.Index('remember_list'), date.value)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
-    const data = (res.data || []).map((item:any) => {
-        return {
-            ...item.data,
-            id: item.ref.value.id
-        }
-    })
+
+    const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
+    const data = storageGet(date.value) || []
     remembers.value = data
 }
 
 const setRemember = async () => {
-    const word = currentWord.value.word
-    const uuid = transform(word, format(date.value, 'YYYYmmdd') as any)
-    await client.query(
-        q.If(
-            q.Exists(q.Ref(q.Collection('rememberList'), uuid)),
-            q.Update(
-                q.Ref(q.Collection('rememberList'), uuid),
-                {
-                    data: {
-                        word,
-                        date: date.value
-                    },
-                },
-            ),
-            q.Create(
-                q.Ref(q.Collection('rememberList'), uuid),
-                {
-                    data: {
-                        word,
-                        date: date.value
-                    },
-                },
-            )
-        )
-    )
-        .then(async (res:any) => {
-            await getRemember()
+    const word = currentWord.value
+    remembers.value = uniqby(remembers.value.concat([word]), 'word')
+    const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
+    storageSet(date.value, remembers.value)
 
-            words.value = filterWords(words.value)
-
-            return words.value
-        })
-        .catch((err) => {
-            console.error(
-                'Error: [%s] %s: %s',
-                err.name,
-                err.message,
-                err.errors()[0].description,
-            )
-            alert(err.message)
-        })
+    words.value = filterWords(words.value)
 }
 
 const blur = () => {
