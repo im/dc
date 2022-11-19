@@ -25,6 +25,8 @@ const view = computed(() => store.config.view)
 // const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
 const date = computed(() => route.params.date || '')
 
+const size = computed(() => (route.query.size ? +route.query.size : 0) || 64)
+
 const currentWord: any = computed(() => words.value[currentIndex.value] || {})
 const total: any = computed(() => words.value.length || 0)
 const word = computed(() => {
@@ -53,9 +55,9 @@ const getWords = async () => {
     let res: any = {}
 
     if (date.value) {
-        res = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date.value)), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
+        res = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date.value), { size: size.value }), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
     } else {
-        res = await client.query( q.Map(q.Paginate(q.Match(q.Index('all_word_list'))), q.Lambda(['ref'],q.Get(q.Var('ref')))))
+        res = await client.query( q.Map(q.Paginate(q.Match(q.Index('all_word_list')), { size: size.value }), q.Lambda(['ref'],q.Get(q.Var('ref')))))
     }
 
     const data = (res.data || []).map((item:any) => {
