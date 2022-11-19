@@ -170,9 +170,8 @@ const setRemember = async () => {
     const word = currentWord.value
     remembers.value = uniqby(remembers.value.concat([word]), 'word')
     const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
-    storageSet(date.value, remembers.value)
+    await storageSet(date.value, remembers.value)
 
-    words.value = filterWords(words.value)
 }
 
 const blur = () => {
@@ -209,6 +208,8 @@ const handleKey = async (e:any) => {
         if (isSuccess.value) {
             await setRemember()
             next(true)
+            words.value = filterWords(words.value)
+
         }
     }
 
