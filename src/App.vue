@@ -2,7 +2,7 @@
     <div class="app">
         <router-view></router-view>
         <Operation v-if="!isLogin" />
-        <div v-if="!isLogin && !isRemember && !isAdd && !isOverview" class="date">{{ date }}</div>
+        <div v-if="!isLogin && !isRemember && !isAdd && !isOverview && !isWords" class="date">{{ date }}</div>
     </div>
 </template>
 
@@ -18,6 +18,7 @@ const isLogin = computed(() => route.name === 'login')
 const isRemember = computed(() => route.name === 'remember')
 const isAdd = computed(() => route.name === 'add')
 const isOverview = computed(() => route.name === 'overview')
+const isWords = computed(() => route.name === 'words')
 </script>
 
 <style lang="stylus">

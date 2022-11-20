@@ -14,30 +14,42 @@
         <Switch v-model="store.config.syllables" code="2" label="Syllables"></Switch>
         <Switch v-model="store.config.review" code="3" label="Review"></Switch>
         <Switch v-model="store.config.view" code="4" label="View"></Switch>
-        <div class="reload" @click="routerLink">
-            {{ routerText }}
+        <div class="group">
+            <div class="reload" @click="routerLink('write')">
+                Write
+                <div class="bg"></div>
+            </div>
+            <div class="reload" @click="routerLink('remember')">
+                Remember
+                <div class="bg"></div>
+            </div>
+        </div>
+        <div class="group">
+            <div class="reload" @click="routerLink('add')">
+                Add
+                <div class="bg"></div>
+            </div>
+            <div class="reload" @click="$router.push({name: 'overview'})">
+                Overview
+                <div class="bg"></div>
+            </div>
+        </div>
+
+        <div class="group">
+            <div class="reload" @click="reload">
+                Reload
+                <div class="bg"></div>
+            </div>
+                <div class="reload" @click="all">
+                    All
+                <div class="bg"></div>
+            </div>
+        </div>
+        <div class="reload" @click="$router.push({name: 'words'})">
+            Words
             <div class="bg"></div>
         </div>
-        <div class="reload" @click="add">
-            Add
-            <div class="bg"></div>
-        </div>
-        <div class="reload" @click="reload">
-            Reload
-            <div class="bg"></div>
-        </div>
-        <div class="reload" @click="all">
-            All
-            <div class="bg"></div>
-        </div>
-        <div class="reload" @click="$router.push({name: 'overview'})">
-            Overview
-            <div class="bg"></div>
-        </div>
-        <div class="handle" @click="handle">
-            {{ open ? 'OFF': 'ON' }}
-        </div>
-     </div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -91,9 +103,9 @@ const onClickOutside = () => {
     open.value = false
 }
 
-const routerLink = () => {
+const routerLink = (name:any) => {
     router.push({
-        name: isRemember.value ? 'write' : 'remember',
+        name: name,
         params: {
             date: date.value
         }
@@ -161,9 +173,16 @@ onMounted(() => {
     z-index 1
     overflow-y auto
     // visibility:  hidden
+    .group
+        display flex
+        align-items center
+        justify-content space-between
+        width 100%
+        & > div
+            width 50%
     .reload
-        height 50px
-        line-height 50px
+        height 40px
+        line-height 40px
         text-align center
         cursor pointer
         position relative

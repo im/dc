@@ -4,6 +4,7 @@ import Add from './pages/Add.vue'
 import Login from './pages/Login.vue'
 import Remember from './pages/Remember.vue'
 import Overview from './pages/Overview.vue'
+import Words from './pages/Words.vue'
 import MD5 from 'crypto-js/md5'
 import { storageGet, storageSet } from './utils'
 
@@ -39,6 +40,11 @@ const routes = [
         name: 'overview',
         path: '/overview',
         component: Overview
+    },
+    {
+        name: 'words',
+        path: '/words',
+        component: Words
     },
     {
         name: 'login',

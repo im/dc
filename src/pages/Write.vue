@@ -5,6 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '../store'
 import { storageGet, storageSet, format, transform } from '../utils'
 import uniqby from 'lodash.uniqby'
+import Words from '../words'
 
 const store = useStore()
 const route = useRoute()
@@ -21,6 +22,7 @@ const review = computed(() => store.config.review)
 const view = computed(() => store.config.view)
 
 const date = computed(() => route.params.date || '')
+const name:any = computed(() => (route.query.name || ''))
 
 const currentWord: any = computed(() => words.value[currentIndex.value] || {})
 const total: any = computed(() => words.value.length || 0)
@@ -47,9 +49,12 @@ const filterWords = (words:any = []) => {
 const getWords = async () => {
     loading.value = true
 
-    const data = storageGet((date.value || 'all') + '_words') || []
-
-    words.value = filterWords(uniqby(data, 'word'))
+    if (name.value) {
+        words.value = (Words as any)[name.value.toLowerCase()]
+    } else {
+        const data = storageGet((date.value || 'all') + '_words') || []
+        words.value = filterWords(uniqby(data, 'word'))
+    }
 
     loading.value = false
 
@@ -207,8 +212,12 @@ const handleKey = async (e:any) => {
 
     if (code === 13) {
         if (isSuccess.value) {
-            await setRemember()
-            rememberNext()
+            if (!currentWord.value.id && !currentWord.value.date) {
+                next()
+            } else {
+                await setRemember()
+                rememberNext()
+            }
         }
     }
 
