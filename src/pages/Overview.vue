@@ -113,8 +113,8 @@ onMounted(() => {
                     roundCap: true,
                     itemStyle: {
                         borderRadius: [3, 3, 0, 0,],
-                        color: ({ dataIndex }) => {
-                            return colors[dataIndex % colors.length]
+                        color: (data:any) => {
+                            return colors[data.dataIndex % colors.length]
                         },
                         opacity: 1
                     },
