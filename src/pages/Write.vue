@@ -131,6 +131,27 @@ const next = () => {
     }
 }
 
+const rememberNext = () => {
+
+    if (store.config.review) {
+        play()
+    }
+
+    words.value = filterWords(words.value)
+
+    const current = currentIndex.value
+    const index = current + 1
+    currentIndex.value = getCurrentIndex(index)
+    value.value = ''
+
+    log()
+
+    if (!store.config.review) {
+        play()
+    }
+
+}
+
 const prev = () => {
     const current = currentIndex.value
     const index = current - 1
@@ -187,8 +208,7 @@ const handleKey = async (e:any) => {
     if (code === 13) {
         if (isSuccess.value) {
             await setRemember()
-            next()
-            words.value = filterWords(words.value)
+            rememberNext()
         }
     }
 
