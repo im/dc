@@ -5,6 +5,7 @@ import { onMounted, defineComponent, ref, nextTick, computed } from 'vue'
 import { format, transform } from '../utils'
 import { useRoute } from 'vue-router'
 import client, { q } from '../db'
+import uniqby from 'lodash.uniqby'
 
 const route = useRoute()
 const word = ref('')
@@ -62,6 +63,7 @@ const getWords = async () => {
         }
     })
     wordList.value = data
+    console.log('data: ', data)
 }
 
 const deleteWord = async (item:any) => {
@@ -103,10 +105,16 @@ const addWord = async () => {
         )
     )
         .then((ret) => {
+            const item: any = ret
             word.value = ''
             loading.value = false
             details.value = wordInfo
-            getWords()
+            wordList.value.push({
+                ...item.data,
+                id: item.ref.value.id
+            } )
+
+            wordList.value = uniqby(wordList.value, 'word')
             focus()
         })
         .catch((err) => {
