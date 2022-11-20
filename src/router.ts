@@ -3,6 +3,7 @@ import Write from './pages/Write.vue'
 import Add from './pages/Add.vue'
 import Login from './pages/Login.vue'
 import Remember from './pages/Remember.vue'
+import Overview from './pages/Overview.vue'
 import MD5 from 'crypto-js/md5'
 import { storageGet, storageSet } from './utils'
 
@@ -33,6 +34,11 @@ const routes = [
         name: 'remember',
         path: '/remember/:date?',
         component: Remember
+    },
+    {
+        name: 'overview',
+        path: '/overview',
+        component: Overview
     },
     {
         name: 'login',

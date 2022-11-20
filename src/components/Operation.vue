@@ -30,6 +30,10 @@
             All
             <div class="bg"></div>
         </div>
+        <div class="reload" @click="$router.push({name: 'overview'})">
+            Overview
+            <div class="bg"></div>
+        </div>
         <div class="handle" @click="handle">
             {{ open ? 'OFF': 'ON' }}
         </div>
@@ -107,11 +111,11 @@ const add = () => {
 }
 
 const reload = () => {
-    store.reload(route.params.date || '', size.value)
+    store.reload(route.params.date || 'all', size.value)
 }
 
 const all = () => {
-    store.reload(route.params.date || '', 1000)
+    store.reload(route.params.date || 'all', 1000)
 }
 
 onMounted(() => {
@@ -155,6 +159,7 @@ onMounted(() => {
     top 0
     transition: 0.2s;
     z-index 1
+    overflow-y auto
     // visibility:  hidden
     .reload
         height 50px

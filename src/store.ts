@@ -19,10 +19,10 @@ export const useStore = defineStore({
     actions: {
         async reload (date:any, size:any) {
             let res:any = null
-            if (date) {
-                res = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date), { size: size }), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
-            } else {
+            if (date === 'all') {
                 res = await client.query( q.Map(q.Paginate(q.Match(q.Index('all_word_list')), { size: size }), q.Lambda(['ref'],q.Get(q.Var('ref')))))
+            } else {
+                res = await client.query( q.Map(q.Paginate(q.Match(q.Index('word_list'), date), { size: size }), q.Lambda(['ref'],q.Get(q.Var('ref')))) )
             }
 
             const data = (res.data || []).map((item:any) => {
@@ -31,7 +31,7 @@ export const useStore = defineStore({
                     id: item.ref.value.id
                 }
             })
-            storageSet(date + 'words', data)
+            storageSet(date + '_words', data)
             window.location.reload()
         }
     }

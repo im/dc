@@ -47,7 +47,7 @@ const filterWords = (words:any = []) => {
 const getWords = async () => {
     loading.value = true
 
-    const data = storageGet(date.value + 'words') || []
+    const data = storageGet((date.value || 'all') + '_words') || []
 
     words.value = filterWords(uniqby(data, 'word'))
 
@@ -240,6 +240,7 @@ watchEffect(async () => {
 })
 
 onMounted(() => {
+    // console.log(Object.keys(localStorage))
     focus()
 })
 
