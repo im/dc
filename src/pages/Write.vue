@@ -117,15 +117,13 @@ const log = () => {
             console.log(`%c${interprets.value[0]}`, 'font-size:12px')
 }
 
-const next = (isRemember = false) => {
+const next = () => {
     if (store.config.review) {
         play()
     }
-    if (!isRemember) {
-        const current = currentIndex.value
-        const index = current + 1
-        currentIndex.value = getCurrentIndex(index)
-    }
+    const current = currentIndex.value
+    const index = current + 1
+    currentIndex.value = getCurrentIndex(index)
     value.value = ''
     log()
     if (!store.config.review) {
@@ -189,9 +187,8 @@ const handleKey = async (e:any) => {
     if (code === 13) {
         if (isSuccess.value) {
             await setRemember()
-            next(true)
+            next()
             words.value = filterWords(words.value)
-
         }
     }
 
