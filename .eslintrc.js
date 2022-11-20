@@ -8,6 +8,7 @@ module.exports = {
         'vue/setup-compiler-macros': true
     },
     'rules': {
+        'vue/valid-v-else': 'off',
         'vue/html-indent': 'off',
         'vue/require-default-prop': 'off',
         'vue/first-attribute-linebreak': 'off',

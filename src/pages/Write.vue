@@ -237,7 +237,6 @@ watchEffect(async () => {
 })
 
 onMounted(() => {
-    // console.log(Object.keys(localStorage))
     focus()
 })
 
