@@ -1,6 +1,6 @@
 <template>
      <div v-click-outside="onClickOutside" class="operation" :class="{ open: open }">
-        <div class="page">
+        <!-- <div class="page">
             <div :class="{ loading }" @click="prevPage">
                 -
                 PREV
@@ -9,7 +9,7 @@
             +
                 NEXT
             </div>
-        </div>
+        </div> -->
         <Switch v-model="store.config.voice" code="1" label="Voice"></Switch>
         <Switch v-model="store.config.syllables" code="2" label="Syllables"></Switch>
         <Switch v-model="store.config.review" code="3" label="Review"></Switch>
