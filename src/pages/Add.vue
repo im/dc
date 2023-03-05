@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import { onMounted, defineComponent, ref, nextTick, computed } from 'vue'
-import { format, transform } from '../utils'
+import { format, transform, storageSet } from '../utils'
 import { useRoute } from 'vue-router'
 import client, { q } from '../db'
 import uniqby from 'lodash.uniqby'
@@ -63,7 +63,8 @@ const getWords = async () => {
         }
     })
     wordList.value = data
-    console.log('data: ', data)
+    storageSet(date.value + '_words', data)
+
 }
 
 const deleteWord = async (item:any) => {

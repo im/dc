@@ -1,14 +1,15 @@
 const request = require('request')
+const HOST = 'https://langeasy.com.cn'
 
 const login = () => {
     return new Promise((reslove, reject) => {
         request(
             {
-                url: `https://langeasy.com.cn/login.action`,
+                url: HOST + `/login.action`,
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    Origin: 'https://www.langeasy.com.cn'
+                    Origin: HOST
                 },
                 formData: {
                     name: process.env.USERNAME,
@@ -30,7 +31,6 @@ const login = () => {
 const cookie = async () => {
 
     const cookies: any = await login()
-    const HOST = 'https://langeasy.com.cn'
 
     const j = request.jar()
     const obj:any = {}

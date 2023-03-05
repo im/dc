@@ -2,7 +2,7 @@
     <div class="app">
         <router-view></router-view>
         <Operation v-if="!isLogin" />
-        <div v-if="!isLogin && !isRemember && !isAdd && !isOverview && !isWords" class="date">{{ date }}</div>
+        <div v-if="isShowDate" class="date">{{ date }}</div>
     </div>
 </template>
 
@@ -12,13 +12,12 @@ import Operation from './components/Operation.vue'
 import { useRoute, } from 'vue-router'
 import { format } from './utils'
 
-const route = useRoute()
+const showArr = ['login', 'remember','add', 'overview', 'words']
+
+const route:any = useRoute()
 const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
 const isLogin = computed(() => route.name === 'login')
-const isRemember = computed(() => route.name === 'remember')
-const isAdd = computed(() => route.name === 'add')
-const isOverview = computed(() => route.name === 'overview')
-const isWords = computed(() => route.name === 'words')
+const isShowDate = computed(() => !~showArr.indexOf(route.name))
 </script>
 
 <style lang="stylus">

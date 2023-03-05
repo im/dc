@@ -54,6 +54,7 @@ const getWords = async () => {
     } else {
         const data = storageGet((date.value || 'all') + '_words') || []
         words.value = filterWords(uniqby(data, 'word'))
+
     }
 
     loading.value = false
@@ -166,7 +167,6 @@ const prev = () => {
 }
 
 const getRemember = async () => {
-
     const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
     const data = storageGet(date.value) || []
     remembers.value = data
