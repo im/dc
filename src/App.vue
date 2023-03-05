@@ -2,22 +2,31 @@
     <div class="app">
         <router-view></router-view>
         <Operation v-if="!isLogin" />
-        <div v-if="isShowDate" class="date">{{ date }}</div>
+        <div v-if="isShowDate" class="date" @click="handleDate">{{ date }}</div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { computed, } from 'vue'
 import Operation from './components/Operation.vue'
-import { useRoute, } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { format } from './utils'
-
+const router = useRouter()
 const showArr = ['login', 'remember','add', 'overview', 'words']
 
 const route:any = useRoute()
 const date = computed(() => route.params.date || format(new Date(), 'YYYY-mm-dd'))
 const isLogin = computed(() => route.name === 'login')
 const isShowDate = computed(() => !~showArr.indexOf(route.name))
+
+const handleDate = () => {
+    router.push({
+        name: 'write',
+        params: {
+            date: date.value
+        }
+    })
+}
 </script>
 
 <style lang="stylus">
@@ -54,6 +63,9 @@ const isShowDate = computed(() => !~showArr.indexOf(route.name))
         top 5px
         right 5px
         z-index 1
+        cursor pointer
+        &:hover
+            opacity 0.7
 *
     margin 0
     padding 0
