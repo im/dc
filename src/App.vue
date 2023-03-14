@@ -30,10 +30,6 @@ const handleDate = () => {
 </script>
 
 <style lang="stylus">
-// @font-face {
-//     font-family:'RubikMoonrocks' ;
-//     src: url('./assets/fonts/RubikMoonrocks.ttf');
-// }
 @font-face {
     font-family:'FredokaOne' ;
     src: url('./assets/fonts/FredokaOne.ttf');
