@@ -1,0 +1,10 @@
+/**
+* ${ComponentName}
+* @author ${username}
+* @date ${curDate}
+* @since ${version}
+**/
+
+import ${ComponentName} from './${componentName}.vue'
+export * from './${componentName}.vue'
+export default ${ComponentName}

@@ -1,31 +1,28 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-const path = require('path')
+import { resolve } from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
     base: '/dc/',
+    plugins: [vue()],
     resolve: {
-        alias: {
-            '@': path.resolve(__dirname, './src'),
-            'store': path.resolve(__dirname, './src/store'),
-            'utils': path.resolve(__dirname, './src/utils')
-        }
-    },
-    plugins: [
-        vue(),
-        AutoImport({
-            resolvers: [
-                ElementPlusResolver(),
-            ],
-        }),
-        Components({
-            resolvers: [
-                ElementPlusResolver(),
-            ],
-        }),
-    ]
+        alias: [
+            {
+                find: '@',
+                replacement: resolve(__dirname, 'src')
+            },
+            {
+                find: 'stores',
+                replacement: resolve(__dirname, 'src/stores')
+            },
+            {
+                find: 'style',
+                replacement: resolve(__dirname, 'src/style')
+            },
+            {
+                find: 'components',
+                replacement: resolve(__dirname, 'src/components')
+            }
+        ]
+    }
 })
