@@ -15,8 +15,9 @@ const isLogin = () => {
 }
 
 const routes = [
-    { name: 'coding', path: '/', component: () => import('@/components/views/coding') },
-    { name: 'login', path: '/login', component: () => import('@/components/views/login') }
+    { name: 'save', path: '/save/:date?', component: () => import('@/components/views/save') },
+    { name: 'login', path: '/login', component: () => import('@/components/views/login') },
+    { name: 'coding', path: '/:date?', component: () => import('@/components/views/coding') },
 ]
 const router = createRouter({
     history: createWebHashHistory(),

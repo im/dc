@@ -12,7 +12,7 @@ import { ref } from 'vue'
     src: url('./assets/fonts/FredokaOne.ttf');
 
 #app, .app
-    font-family RubikMoonrocks, FredokaOne, Monaco, PT Serif, Serif, Avenir, Helvetica, Arial, sans-serif!important
+    // font-family RubikMoonrocks, FredokaOne, Monaco, PT Serif, Serif, Avenir, Helvetica, Arial, sans-serif!important
     -webkit-font-smoothing antialiased
     -moz-osx-font-smoothing grayscale
     color #2c3e50
