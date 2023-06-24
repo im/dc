@@ -2,6 +2,10 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import MD5 from 'crypto-js/md5'
 import { storageGet } from '@/utils'
 
+import SaveView from '@/components/views/save'
+import LoginView from '@/components/views/login'
+import CodingView from '@/components/views/coding'
+
 const hashMap:any = {
     'c6638f528df929698ade4cb86dc19b04': true,
     'e6272e71eecac9505731fb3b0faf2176': true,
@@ -15,9 +19,9 @@ const isLogin = () => {
 }
 
 const routes = [
-    { name: 'save', path: '/save/:date?', component: () => import('@/components/views/save') },
-    { name: 'login', path: '/login', component: () => import('@/components/views/login') },
-    { name: 'coding', path: '/:date?', component: () => import('@/components/views/coding') },
+    { name: 'save', path: '/save/:date?', component: SaveView },
+    { name: 'login', path: '/login', component: LoginView },
+    { name: 'coding', path: '/:date?', component: CodingView },
 ]
 const router = createRouter({
     history: createWebHashHistory(),
