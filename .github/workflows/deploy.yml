@@ -18,7 +18,7 @@ jobs:
 
             - name: 3. install pnpm..
               run: |
-                  npm install pnpm -g
+                  npm install pnpm@7.5.0 -g
                   pnpm i
 
             - name: 4. build docs..
