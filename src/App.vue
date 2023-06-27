@@ -7,9 +7,9 @@ import { ref } from 'vue'
 </template>
 
 <style lang="stylus">
-@font-face
-    font-family:'FredokaOne' ;
-    src: url('./assets/fonts/FredokaOne.ttf');
+// @font-face
+//     font-family:'FredokaOne' ;
+//     src: url('./assets/fonts/FredokaOne.ttf');
 
 #app, .app
     // font-family RubikMoonrocks, FredokaOne, Monaco, PT Serif, Serif, Avenir, Helvetica, Arial, sans-serif!important

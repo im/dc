@@ -5,6 +5,8 @@ import { storageGet } from '@/utils'
 import SaveView from '@/components/views/save'
 import LoginView from '@/components/views/login'
 import CodingView from '@/components/views/coding'
+import InputView from '@/components/views/input'
+import ListView from '@/components/views/list'
 
 const hashMap:any = {
     'c6638f528df929698ade4cb86dc19b04': true,
@@ -21,6 +23,8 @@ const isLogin = () => {
 const routes = [
     { name: 'save', path: '/save/:date?', component: SaveView },
     { name: 'login', path: '/login', component: LoginView },
+    { name: 'input', path: '/input/:date?', component: InputView },
+    { name: 'list', path: '/list/:date?', component: ListView },
     { name: 'coding', path: '/:date?', component: CodingView },
 ]
 const router = createRouter({

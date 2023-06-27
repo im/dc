@@ -6,14 +6,19 @@ export const getAssetsBg = (index: number) => {
 export const storageGet = (name: any) => {
     const data: any = window.localStorage.getItem(name)
     if (data) {
-        return JSON.parse(data)
+        try {
+            return JSON.parse(data)
+        } catch (err) {
+            // console.log('err: ', err)
+        }
+        return data
     } else {
         return null
     }
 }
 
 export const storageSet = (name: any, data: any) => {
-    window.localStorage.setItem(name, JSON.stringify(data))
+    window.localStorage.setItem(name, typeof data === 'string' ? data : JSON.stringify(data))
 }
 
 export const format = (millisecond:any, template:any) => {

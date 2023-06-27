@@ -8,6 +8,7 @@
 <template>
     <div class="operate">
         <router-link tag="a" :to="{ name: 'save' }">添加</router-link>
+        <router-link tag="a" :to="{ name: 'list' }">列表</router-link>
         <a href="javascript:;" @click="handle('voice')">声音: {{ text(config.voice) }}</a>
         <a href="javascript:;" @click="handle('syllables')">音节: {{ text(config.syllables) }}</a>
         <a href="javascript:;" @click="handle('review')">默写: {{ text(config.review) }}</a>
