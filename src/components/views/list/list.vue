@@ -28,8 +28,8 @@ const wordMap = computed(() => {
         return acc
     },{})
 })
-const words = ref([])
-const list = ref([])
+const words:any = ref([])
+const list:any = ref([])
 
 const getWords = async () => {
     return fetch(`/dc/data.json`).then(res => {
@@ -50,7 +50,7 @@ const updateWords = async () => {
     words.value = list.filter((v:any) => v.date === date.value)
 }
 
-const handleClick = async (item) => {
+const handleClick = async (item:any) => {
     const current = wordMap.value[item.word]
     if (current) {
         await deleteWord(current)

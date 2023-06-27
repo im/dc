@@ -57,7 +57,7 @@ const getSyllables = async (word: string) => {
     })
 }
 
-const addWord = async (word, callback) => {
+const addWord = async (word:any) => {
 
     const wordInfo = await getWord(word)
 
@@ -79,7 +79,7 @@ const addWord = async (word, callback) => {
 const run = async () => {
 
     const arr = texts.value.split(',')
-    let timer = null
+    let timer:any = null
     loading.value = true
 
     timer = setInterval(async () => {
