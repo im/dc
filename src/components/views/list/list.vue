@@ -7,7 +7,7 @@
 
 <template>
         <div>
-            <a v-for="item in list" :key="item.word" :title="item.interpret" href="javascript:;" :class="{ active: wordMap[item.word] }" @click="handleClick(item)">{{ item.word }}</a>
+            <a v-for="item in list" :key="item.word" :title="item.interpret + (wordMap[item.word] ? wordMap[item.word].date : '')" href="javascript:;" :class="{ active: wordMap[item.word] }" @click="handleClick(item)">{{ item.word }}</a>
         </div>
 </template>
 
@@ -46,8 +46,7 @@ const deleteWord = async (word:any) => {
 }
 
 const updateWords = async () => {
-    const list = await wordsStore.get()
-    words.value = list.filter((v:any) => v.date === date.value)
+    words.value = await wordsStore.get()
 }
 
 const handleClick = async (item:any) => {
