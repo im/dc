@@ -38,6 +38,8 @@ const getWords = async () => {
         list.value = Object.keys(obj).map(key => {
             return obj[key]
         })
+        // @ts-ignore
+        window.words = list.value
     })
 }
 
@@ -47,8 +49,6 @@ const deleteWord = async (word:any) => {
 
 const updateWords = async () => {
     words.value = await wordsStore.get()
-    // @ts-ignore
-    window.words = words.value
 }
 
 const handleClick = async (item:any) => {
