@@ -47,6 +47,8 @@ const deleteWord = async (word:any) => {
 
 const updateWords = async () => {
     words.value = await wordsStore.get()
+    // @ts-ignore
+    window.words = words.value
 }
 
 const handleClick = async (item:any) => {
