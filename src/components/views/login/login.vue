@@ -37,7 +37,7 @@ const blur = () => {
 
 const focus = async () => {
     await nextTick()
-    inputRef.value?.input.focus()
+    inputRef.value?.focus()
 }
 
 onMounted(() => {

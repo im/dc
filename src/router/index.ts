@@ -11,7 +11,8 @@ import ListView from '@/components/views/list'
 const hashMap:any = {
     'c6638f528df929698ade4cb86dc19b04': true,
     'e6272e71eecac9505731fb3b0faf2176': true,
-    'b6c191fff6b83348baa79d20d297ae40': true
+    'b6c191fff6b83348baa79d20d297ae40': true,
+    '487f7b22f68312d2c1bbc93b1aea445b': true
 }
 
 const isLogin = () => {
